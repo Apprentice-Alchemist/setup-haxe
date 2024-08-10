@@ -9,6 +9,7 @@ import * as os from 'node:os';
 import * as tc from '@actions/tool-cache';
 import * as core from '@actions/core';
 import { exec } from '@actions/exec';
+import * as semver from "semver";
 
 export type AssetFileExt = '.zip' | '.tar.gz';
 
@@ -105,7 +106,15 @@ abstract class Asset {
 // * NOTE https://github.com/HaxeFoundation/neko/releases/download/v2-4-0/neko-2.4.0-win64.zip
 export class NekoAsset extends Asset {
   static resolveFromHaxeVersion(version: string) {
-    const nekoVer = version.startsWith('3.') ? '2.1.0' : '2.4.0'; // Haxe 3 only supports neko 2.1
+    const ver = semver.coerce(version);
+    let nekoVer;
+    if(ver?.compare("4.3.0") == 1) {
+      nekoVer = '2.4.0';
+    } else if (ver?.compare("4.0.0") == 1) {
+      nekoVer = '2.3.0';
+    } else  {
+      nekoVer = '2.1.0';
+    }
     return new NekoAsset(nekoVer);
   }
 
