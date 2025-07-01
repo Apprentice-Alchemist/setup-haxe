@@ -130,6 +130,10 @@ export class NekoAsset extends Asset {
       return 'osx-universal';
     }
 
+    if (this.env.platform === 'linux' && this.env.arch === 'arm64') {
+      return 'linux-arm64';
+    }
+
     return `${this.env.platform}${this.env.arch}`;
   }
 
@@ -183,7 +187,7 @@ export class HaxeAsset extends Asset {
       }
 
       case 'linux': {
-        return 'linux64';
+        return this.env.arch === 'arm64' ? 'linux-arm64' : 'linux64';
       }
 
       case 'win': {
@@ -238,8 +242,8 @@ export class Env {
       return '64';
     }
 
-    if (arch === 'arm64' && this.platform === 'osx') {
-      return '64';
+    if (arch === 'arm64') {
+      return this.platform === 'osx' ? '64' : 'arm64';
     }
 
     throw new Error(`${arch} not supported`);
